@@ -1,0 +1,4 @@
+server:
+  host: hesper.example.com
+  port: 8080
+  protocol: http
