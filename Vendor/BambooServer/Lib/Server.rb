@@ -5,18 +5,19 @@ class BambooServer
   class Lib
     class Server < Libs::Core::BaseClass
       def initialize(config)
-        p "config.server:" + config.server.inspect
-        @port = config.server['port'] ? config.server['port'] : 8080
-        @host = config.server['host'] ? config.server['host'] : '127.0.0.1'
-        @protocol = config.server['protocol'] ? config.server['protocol'] : 'http'
-        @project_root = config.project_root
+        @config = config
+        @port = @config.server['port'] ? @config.server['port'] : 8080
+        @host = @config.server['host'] ? @config.server['host'] : '127.0.0.1'
+        @protocol = @config.server['protocol'] ? @config.server['protocol'] : 'http'
+        @project_root = @config.project_root
         @pid_file = @project_root + "/tmp/pids/bamboo.pdi"
+        @logger = Libs::Utils::Logger.new(@project_root)
       end
 
-      def main
-      	bamboo = Libs::Core::Bamboo.new
+      def main_proc
+      	bamboo = Libs::Core::Dispatcher.new(@config)
         server = TCPServer.new @port
-        self.pid
+        pid
         pids = []
         loop do
           Thread.start(server.accept) do |client|
@@ -33,6 +34,9 @@ class BambooServer
           break if header.chomp.empty?
           headers << header.chomp
         end
+        logger.log('debug', ['bamboo', 'main', "headers:#{headers.inspect}"])
+
+        Libs::Core::Dispatcher.new(@config)
         p [Thread.current, headers]
 
         client.puts "HTTP/1.0 200 OK"

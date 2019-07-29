@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  remote: https://rails-assets.org/
+  specs:
+    mysql2 (0.5.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mysql2
+
+RUBY VERSION
+   ruby 2.4.0p0
+
+BUNDLED WITH
+   2.0.1

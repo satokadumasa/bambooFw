@@ -1,8 +1,8 @@
 class Libs
 	class Core
 		class Dispatcher
-			def initialize project_root
-				@project_root = project_root
+			def initialize config
+				@project_root = config.project_root
 			end
 		end
 	end

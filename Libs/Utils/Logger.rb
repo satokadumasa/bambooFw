@@ -10,7 +10,7 @@ class Libs
 			def log(type, messages)
 				p Date.today.strftime("%Y-%m-%d %H:%M:%S").to_s
 				str = "[#{Date.today.strftime("%Y-%m-%d %H:%M:%S")}]"
-				filename = "#{@project_root}tmp/logs/#{type}_#{Date.today.strftime("%Y%m%d%H%M%S")}.log"
+				filename = "#{@project_root}tmp/logs/#{type}_#{Date.today.strftime("%Y%m%d").to_s}.log"
 				messages.each do |message|
 					str << " " << message
 				end

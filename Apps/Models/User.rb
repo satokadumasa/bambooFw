@@ -1,4 +1,4 @@
-class User
+class User < Libs::Core::BaseModel
 	def initialize(config)
 		super(config)
 	end
