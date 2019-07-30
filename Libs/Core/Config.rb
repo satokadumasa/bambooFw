@@ -1,8 +1,8 @@
 require 'yaml'
 
-class Libs
-	class Core
-		class Config
+class Libs < BaseClass
+	class Core < BaseClass
+		class Config < BaseClass
 			attr_accessor :server, :project_root
 			def initialize project_root
 				yaml = YAML.load_file(project_root + "/config/app.yml")

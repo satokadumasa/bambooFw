@@ -1,8 +1,8 @@
 require "time"
 
-class Libs
-	class Utils
-		class Logger
+class Libs < BaseClass
+	class Utils < BaseClass
+		class Logger < BaseClass
 			def initialize project_root
 				@project_root = project_root
 			end

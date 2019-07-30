@@ -1,6 +1,6 @@
-class Libs
-	class Core
-		class Autoloder
+class Libs < BaseClass
+	class Core < BaseClass
+		class Autoloader < BaseClass
 			def initialize project_root
 				@project_root = project_root
 			end

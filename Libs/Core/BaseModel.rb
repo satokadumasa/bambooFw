@@ -1,8 +1,8 @@
 require 'mysql'
 
-class Libs
-	class Core
-    class BaseModel < Libs::Core::BaseClass
+class Libs < BaseClass
+	class Core < BaseClass
+    class BaseModel < BaseClass
       def initialize(config)
 			  # adapter: mysql2
 			  # encoding: utf8

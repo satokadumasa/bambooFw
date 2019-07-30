@@ -1,14 +1,8 @@
-class Libs
-	class Core
-		class BaseClass
-		  def self.const_missing(const)
-		    file_name = const
-		    p "file_name:" + file_name.to_s
-		    require file_name.to_s
-		    p "require:" + file_name.to_s
-		    puts "const_missing(#{const.inspect})"
-		    super(const)
-		  end
-		end
-	end
+class BaseClass
+  def self.const_missing(const)
+  	constant = self.name + '::' + const.to_s
+  	file_name = constant.gsub('::', '/') + '.rb'
+  	require file_name
+    Object.const_get constant
+  end
 end

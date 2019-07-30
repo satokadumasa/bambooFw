@@ -1,1 +1,1 @@
-autoload :BambooServer, 'BambooServer/BambooServer.rb'
+# autoload :BambooServer, 'BambooServer/BambooServer.rb'

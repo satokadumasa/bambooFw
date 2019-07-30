@@ -16,7 +16,9 @@ app_path = project_root + 'Apps/'
 $LOAD_PATH.push(libs_path)
 $LOAD_PATH.push(vendor_path)
 $LOAD_PATH.push(app_path)
+require 'Libs/Core/BaseClass.rb'
 begin
+	require 'Libs/Core/BaseClass.rb'
 	require 'Apps.rb'
 	require 'Libs.rb'
 	require 'autoload.rb'

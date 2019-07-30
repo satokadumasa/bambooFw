@@ -1,3 +1,2 @@
-class Apps
-	autoload :Controllers, 'Controllers/Controllers.rb'
+class Apps < BaseClass
 end

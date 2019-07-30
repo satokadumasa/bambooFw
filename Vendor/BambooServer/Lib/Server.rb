@@ -1,9 +1,9 @@
 require 'socket'
 require 'fileutils'
 
-class BambooServer
-  class Lib
-    class Server < Libs::Core::BaseClass
+class BambooServer < BaseClass
+  class Lib < BaseClass
+    class Server < BaseClass
       def initialize(config)
         @config = config
         @port = @config.server['port'] ? @config.server['port'] : 8080

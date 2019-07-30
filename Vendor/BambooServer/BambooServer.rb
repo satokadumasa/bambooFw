@@ -1,3 +1,3 @@
-class BambooServer
-	autoload :Lib, 'BambooServer/Lib/Server.rb'
+class BambooServer < BaseClass
+	# autoload :Lib, 'BambooServer/Lib/Server.rb'
 end
