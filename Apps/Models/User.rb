@@ -1,6 +1,8 @@
-class User < Libs::Core::BaseModel
+class User 
 	def initialize(config)
-		super(config)
+		# super(config)
+		@table_name = self.class.name.to_s.to_snake.to_table_name
+		p "table_name:#{@table_name}"
 	end
 
 	def all()

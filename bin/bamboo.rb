@@ -9,10 +9,15 @@ $LOAD_PATH.push(app_path)
 # puts "LOAD_PATH:" + $LOAD_PATH.inspect
 # require 'Core/Autoloder.rb'
 autoload :BambooServer, 'BambooServer/BambooServer.rb'
-require 'Apps.rb'
-require 'Libs.rb'
-require 'autoload.rb'
-require 'Utils/conv_camel_snake.rb'
+begin
+	require 'Apps.rb'
+	require 'Libs.rb'
+	require 'autoload.rb'
+	require 'Utils/conv_camel_snake.rb'
+rescue Exception => e
+	puts e.message
+end
+aload = Libs::Core::Autoloader.new(project_root)
 logger = Libs::Utils::Logger.new(project_root)
 logger.log('debug', ['bamboo', 'main', 'files:'])
 # puts "LOAD_PATH:" + $LOAD_PATH.inspect
