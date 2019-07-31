@@ -1,0 +1,4 @@
+routes:
+  '/': "welcome#index"
+  users:
+  notes:

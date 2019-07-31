@@ -1,4 +1,4 @@
-require "time"
+require "date"
 
 class Libs < BaseClass
 	class Utils < BaseClass
@@ -8,13 +8,12 @@ class Libs < BaseClass
 			end
 
 			def log(type, messages)
-				p Date.today.strftime("%Y-%m-%d %H:%M:%S").to_s
-				str = "[#{Date.today.strftime("%Y-%m-%d %H:%M:%S")}]"
-				filename = "#{@project_root}tmp/logs/#{type}_#{Date.today.strftime("%Y%m%d").to_s}.log"
+				str = "[#{DateTime.now.strftime("%Y-%m-%d %H:%M:%S")}]"
+				filename = "#{@project_root}tmp/logs/#{type}_#{DateTime.now.strftime("%Y%m%d").to_s}.log"
 				messages.each do |message|
 					str << " " << message
 				end
-				File.open(filename, "w") do |f|
+				File.open(filename, "a") do |f|
 					f.puts str
 				end
 			end

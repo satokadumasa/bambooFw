@@ -2,3 +2,10 @@ server:
   host: hesper.example.com
   port: 8080
   protocol: http
+abb:
+  image_extensions:
+    - jpg
+    - jpeg
+    - gif
+    - png
+    - ico

@@ -7,7 +7,7 @@ $LOAD_PATH.push(project_root)
 $LOAD_PATH.push(libs_path)
 $LOAD_PATH.push(vendor_path)
 $LOAD_PATH.push(app_path)
-puts "LOAD_PATH:" + $LOAD_PATH.inspect
+# puts "LOAD_PATH:" + $LOAD_PATH.inspect
 # require 'Core/Autoloder.rb'
 # autoload :BambooServer, 'BambooServer/BambooServer.rb'
 require 'Libs/Core/BaseClass.rb'
@@ -17,13 +17,9 @@ p "BambooServer/BambooServer.rb"
 
 begin
 	require app_path + 'Apps.rb'
-	p "Apps"
 	require libs_path + 'Libs.rb'
-	p "Libs"
 	require 'autoload.rb'
-	p "autoload"
 	require 'Utils/conv_camel_snake.rb'
-	p "conv_camel_snake"
 rescue Exception => e
 	puts e.message
 end

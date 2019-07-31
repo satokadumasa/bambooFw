@@ -14,9 +14,9 @@ class Libs < BaseClass
 			  @pk = 'id'
 			  @table_name = self.name.to_snake
 				yaml = YAML.load_file(config.project_root + "/config/app.yml")
-				@databases = yaml['databases']
-      	@connection = Mysql::connect(@databases["hostname"], @databases["username"], @databases["password"], @databases["dbname"])
-      	@connection.query("set character set #{@databases['encoding']}")
+				# @databases = yaml['databases']
+    #   	@connection = Mysql::connect(@databases["hostname"], @databases["username"], @databases["password"], @databases["dbname"])
+    #   	@connection.query("set character set #{@databases['encoding']}")
       end
     end
 
