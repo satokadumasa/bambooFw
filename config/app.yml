@@ -1,8 +1,15 @@
 server:
+  protocol: http
   host: hesper.example.com
   port: 8080
-  protocol: http
-abb:
+  base_uri: '/'
+app:
+  default_actions:
+    - index
+    - show
+    - create
+    - update
+    - delete
   image_extensions:
     - jpg
     - jpeg

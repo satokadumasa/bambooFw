@@ -1,4 +1,4 @@
 routes:
   '/': "welcome#index"
-  users:
-  notes:
+  users: 'users'
+  notes: 'notes'

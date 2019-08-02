@@ -34,39 +34,36 @@ class BambooServer < BaseClass
       def sarver(client)
         @logger.log('debug', ['bamboo', 'sarver', "Start"])
         p [Thread.current]
-        buffers = []
-        buffers2 = []
+        param = ''
         method_type = nil
         client_host_name = ''
-        lenght = 0
-        uri = '/'
+        length = 0
+        uri = ''
         while buffer = client.gets
           puts buffer
-          buffers2 << buffer
-          @logger.log('debug', ['bamboo', 'sarver', "buffer:#{buffer}"])
-          break if buffer.chomp.empty?
 
           if buffer.include? 'Content-Length'
-            lenght = buffer.split[1].to_i
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "CASE Content-Length"])
+            length = buffer.split[1].to_i
           end
 
           if buffer.include? 'Host'
             client_host_name = buffer.split[1].to_s
             puts "client_host_name:#{client_host_name}"
-            @logger.log('debug', ['Server', 'sarver', "client_host_name:#{client_host_name}"])
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "client_host_name:#{client_host_name}"])
           end
           if buffer.include? 'POST'
-            @logger.log('debug', ['Server', 'sarver', "POST"])
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "POST"])
             method_type = 'POST'
             uri = buffer.split[1].to_s
           end
           if buffer.include? 'GET'
-            @logger.log('debug', ['Server', 'sarver', "GET"])
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "GET"])
             method_type = 'GET' 
             uri = buffer.split[1].to_s
           end
           if buffer.include? 'DELETE'
-            @logger.log('debug', ['Server', 'sarver', "DELETE"])
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "DELETE"])
             method_type = 'DELETE' 
             uri = buffer.split[1].to_s
           end
@@ -74,38 +71,38 @@ class BambooServer < BaseClass
             method_type = 'PUT' 
             uri = buffer.split[1].to_s
           end
-          method_type = method_type ? method_type : 'GET'
-          if method_type == 'POST' && (buffer == "\r\n" || buffer == "\n" || buffer == "\r")
-            if lenght > 0
-              lenght.times do
-                buffers << client.gets
-              end
+          if buffer == "\r\n" || buffer == "\n" || buffer == "\r"
+            length.times do
+              param <<  client.getc
             end
+            break
           end
-          # buffers << client.gets
+          if buffer.chomp.empty?
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "Break Loop"])
+            puts "Break Loop"
+            break
+          end
         end
-        puts buffers2
-        @logger.log('debug', ['bamboo', 'sarver', "buffers:#{buffers.inspect}"])
-        @logger.log('debug', ['bamboo', 'sarver', "config:#{@config.inspect}"])
-        @logger.log('debug', ['bamboo', 'sarver', "uri:#{uri}"])
-        @logger.log('debug', ['bamboo', 'sarver', "method_type:#{method_type}"])
 
-        params = get_params(uri, buffers, method_type)
+        if method_type == 'GET'
+          param = uri.split('?')[1]
+        end
 
-        @logger.log('debug', ['Server', 'sarver', "params:#{params.inspect}"])
+        method_type = method_type ? method_type : 'GET'
 
-        dispatcher = Libs::Core::Dispatcher.new(@config, params, uri, method_type)
+        @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "uri[#{uri}] method_type[#{method_type}] param[#{param}]"])
+
+        params = get_params(param, method_type) if param
+
+        @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "params:#{params.inspect}"])
+
+        dispatcher = Libs::Core::Dispatcher.new(@config, uri, method_type, params)
         content = dispatcher.dispatch
 
-        puts "CH-00001"
         client.puts "HTTP/1.0 200 OK"
-        puts "CH-00002"
         client.puts "Content-Type: text/plain"
-        puts "CH-00003"
         client.puts
-        puts "CH-00004"
         client.puts content
-        puts "CH-00005"
         client.close
       end
 
@@ -116,29 +113,23 @@ class BambooServer < BaseClass
         file.close
       end
 
-      def get_params(uri, buffers, method_type)
-        @logger.log('debug', ['Server', 'get_params', "uri[#{uri}] method_type:#{method_type}"])
+      def get_params(param, method_type)
+        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "param[#{param}] method_type:#{method_type}"])
         params = []
-        if method_type == 'GET'
-          puts "get_params CASE GET"
-          uri = uri.split('?')[1]
-          puts "get_params CASE GET(2) uri:#{uri}"
-          arr = uri.split('&')
-          puts "get_params CASE GET(3) arr:#{arr.inspect}"
-          arr.each do |param|
-            puts "param:#{param}"
-            param_arr = param.split('=')
-            puts "param_arr:#{param_arr}"
-            params.push({param_arr[0] => param_arr[1]})
-          end
-          if method_type == 'POST'
-            buffers.each do |buffer|
-            end
-          end
+        params = divide_param(param) if param
 
-          @logger.log('debug', ['Server', 'get_params', "params:#{params.inspect}"])
-          params
+        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "params:#{params.inspect}"])
+        params
+      end
+
+      def divide_param(param)
+        params = []
+        arr = param.split('&')
+        arr.each do |str|
+          param_arr = str.split('=')
+          params.push({param_arr[0] => param_arr[1]})
         end
+        params
       end
 
       def check_image_extensions
