@@ -31,14 +31,17 @@ class Libs < BaseClass
 		        	uri = key
 		        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'GET'})
 		        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'POST'})
-			        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Welcome.index"])
 			      else
 							controller = value
 				      @default_actions.each do |action|
 				      	if action == 'index'
 					      	action = '/' 
+				        	uri = @config.server['base_uri'] + controller + '/' 
+				      	elsif action == 'show' || action == 'edit' || action == 'delete'
+				        	uri = @config.server['base_uri'] + controller + '/' + action + '/' 
+				        else
+				        	uri = @config.server['base_uri'] + controller + '/' + action
 					      end
-			        	uri = @config.server['base_uri'] + controller + '/' + action
 
 			        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'GET'})
 			        	unless action == 'index' || action == 'show'
@@ -47,20 +50,22 @@ class Libs < BaseClass
 				      end
 			      end
 					end
-	        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "routes:#{@routes}"])
+	        # @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "routes:#{@routes}"])
 				rescue Exception => e
 	        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Error:#{e.message}"])
 				end
 			end
 
 			def find_route(uri, method_type)
-        @logger.log('debug', ['Libs::Core::Router', 'find_route', "uri[#{uri}] method_type[#{method_type}]"])
+				uri = uri.to_snake
 				begin
 					@routes.each do |route|
-		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "start_with? [#{(uri.start_with? route['uri']).to_s}] method_type?:#{(method_type == route['method']).to_s}"])
-		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "route:#{route.inspect}"])
+		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "route.uri[#{route['uri']}]"])
+		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "uri[#{uri}]"])
+		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "start_with[#{(uri.start_with? route['uri'])}]"])
+		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "route.uri[#{route['uri']}] route.method[#{route['method']}]"])
 						if ((uri.start_with? route['uri']) && (method_type == route['method']))
-			        @logger.log('debug', ['Libs::Core::Router', 'find_route', 'find route'])
+			        @logger.log('debug', ['Libs::Core::Router', 'find_route', "route[#{route.inspect}]"])
 							return route
 						end
 					end

@@ -2,6 +2,7 @@ class BaseClass
 	def initialize(config)
 		@config = config
 		@logger = Libs::Utils::Logger.new(@config.project_root)
+		@logger.log('debug',['BaseClass','initialize', "initialized"])
 	end
 
   def self.const_missing(const)

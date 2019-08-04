@@ -3,7 +3,7 @@ databases:
     adapter: mysql2
     hostname: localhost
     encoding: utf8
-    database: blog_development
+    dbname: bamboo
     username: <%= ENV['BAMBOO_DB_USER'] %>
     password: <%= ENV['BAMBOO_DB_PASSWORD'] %>
     pool: 20

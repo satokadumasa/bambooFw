@@ -4,12 +4,14 @@ server:
   port: 8080
   base_uri: '/'
 app:
+  id: '[+-]?\d+'
+  site_name: CELAENO
   default_actions:
-    - index
     - show
     - new
     - edit
     - delete
+    - index
   image_extensions:
     - jpg
     - jpeg

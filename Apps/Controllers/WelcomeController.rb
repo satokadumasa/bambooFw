@@ -1,19 +1,18 @@
 class Apps < BaseClass
 	class Controllers < BaseClass
 		class WelcomeController < Libs::Core::BaseController
-			def initialize(config)
-				super(config)
-				@config = config
+			def initialize(config, params)
+				super(config, params)
+				# @config = config
 				@logger.log('debug',['Apps::Controllers::WelcomeController','initialize', 'END'])
 			end
 
 			def index
-				@data = []
+				@data = {}
 				begin
 					user = Apps::Models::User.new(@config)
-					# @data.push({'users' => user.all()})
-					@data['Users'] = user.find_all
-					@logger.log('debug',['Apps::Controllers::WelcomeController','index', "data:#{@data.inspect}"])
+					@users = user.find_all
+					@data['Users'] = @users
 				rescue Exception => e
 					@logger.log('debug',['Apps::Controllers::WelcomeController','index', "Error:#{e.message}"])
 				end

@@ -16,29 +16,24 @@ class BambooServer < BaseClass
       end
 
       def main_proc
-        @logger.log('debug', ['bamboo', 'main_proc', "Start"])
-      	# bamboo = Libs::Core::Dispatcher.new(@config)
         server = TCPServer.new @port
         pid
         pids = []
-        @logger.log('debug', ['bamboo', 'main_proc', "CH-01"])
         while File.exist? @pid_file do
-          @logger.log('debug', ['bamboo', 'main_proc', "Thread wait"])
           Thread.start(server.accept) do |client|
-            @logger.log('debug', ['bamboo', 'main_proc', "Thread.Start"])
             sarver client
           end
         end
       end
         
       def sarver(client)
-        @logger.log('debug', ['bamboo', 'sarver', "Start"])
         p [Thread.current]
         param = ''
         method_type = nil
         client_host_name = ''
         length = 0
         uri = ''
+
         while buffer = client.gets
           puts buffer
 
@@ -61,6 +56,10 @@ class BambooServer < BaseClass
             @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "GET"])
             method_type = 'GET' 
             uri = buffer.split[1].to_s
+            str = uri.split('?')[0]
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "str:#{str}"])
+            id = str.split('/').pop
+            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "id:#{id.inspect}"])
           end
           if buffer.include? 'DELETE'
             @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "DELETE"])
@@ -90,17 +89,13 @@ class BambooServer < BaseClass
 
         method_type = method_type ? method_type : 'GET'
 
-        @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "uri[#{uri}] method_type[#{method_type}] param[#{param}]"])
-
-        params = get_params(param, method_type) if param
-
-        @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "params:#{params.inspect}"])
+        params = get_params(param, method_type, id) 
 
         dispatcher = Libs::Core::Dispatcher.new(@config, uri, method_type, params)
         content = dispatcher.dispatch
 
         client.puts "HTTP/1.0 200 OK"
-        client.puts "Content-Type: text/plain"
+        client.puts "Content-Type: text/html"
         client.puts
         client.puts content
         client.close
@@ -113,21 +108,23 @@ class BambooServer < BaseClass
         file.close
       end
 
-      def get_params(param, method_type)
-        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "param[#{param}] method_type:#{method_type}"])
-        params = []
+      def get_params(param, method_type, id)
+        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "id:#{id}"])
+        params = {}
         params = divide_param(param) if param
+        params['id'] = id if id
+        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "params[#{params.inspect}]"])
 
-        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "params:#{params.inspect}"])
         params
       end
 
       def divide_param(param)
-        params = []
+        # @logger.log('debug', ['BambooServer::Lib::Server', 'divide_param', "id[#{param.inspect}]"])
+        params = {}
         arr = param.split('&')
         arr.each do |str|
           param_arr = str.split('=')
-          params.push({param_arr[0] => param_arr[1]})
+          params[param_arr[0]] = param_arr[1]
         end
         params
       end
