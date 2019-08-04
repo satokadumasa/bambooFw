@@ -1,59 +1,72 @@
 class Libs < BaseClass
 	class Core < BaseClass
 		class Router < BaseClass
-			def initialize config
-				@project_root = config.project_root
-				@config = config
-				@logger = Libs::Utils::Logger.new(@project_root)
-				yaml = YAML.load_file(@project_root + "config/routes.yml")
-				@yaml = yaml['routes']
-        @logger.log('debug', ['Libs::Core::Router', 'initialize', "yaml:#{yaml}"])
-        @logger.log('debug', ['Libs::Core::Router', 'initialize', "config:#{config.inspect}"])
-        @default_actions = config.app['default_actions']
-        @logger.log('debug', ['Libs::Core::Router', 'initialize', "default_actions:#{@default_actions.inspect}"])
+			def initialize(config)
+				begin
+					super(config)
+					@config = config
+					@project_root = @config.project_root
+					@logger = Libs::Utils::Logger.new(@project_root)
+					yaml = YAML.load_file(@project_root + 'config/routes.yml')
+					@yaml = yaml['routes']
+	        @default_actions = @config.app['default_actions']
+	        @logger.log('debug', ['Libs::Core::Router', 'initialize', "default_actions:#{@default_actions.inspect}"])
+				rescue Exception => e
+					# puts "Libs::Core::Router.initialize Error:#{e.massage}"
+				end
 			end
 
 			def generate_routes
-				@routes = []
-				@yaml.each do |arr|
-	        arr_route = []
-					controller_name = ''
-					action = ''
-	        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "arr:#{arr}"])
-	        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "CH-00"])
-	        if arr[1].include?('#')
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "CH-01"])
-	        	arr_route =arr[1].split('#')
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "arr_route[#{arr_route.inspect}]"])
-	        	action = arr_route[1]
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "action:#{action}"])
-	        	controller = arr_route[0]
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Controller#actions controller[#{controller}]"])
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Controller#actions config[#{@config.inspect}]"])
-	        	uri = @config.server['base_uri'] + controller + '/' + action
-	        	controller_name = "Apps::Controllers::#{controller.to_camel}Controller"
-	        	@routes.push({uri => {'controller' => controller_name, 'action' => action}})
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Welcome.index"])
-	        else
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "CH-02"])
-						controller = arr[1]
-		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Controller.actions controller[#{controller}]"])
-	        	controller_name = controller
-	        	controller_name = "Apps::Controllers::#{controller_name.to_camel}Controller"
+				begin
+					@routes = []
+					@yaml.each do |key, value|
+				  	arr_route = []
+						controller_name = ''
+						action = ''
+		        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "CH-00"])
+		        if value.include?('#')
+		        	arr = value.split('#')
+		        	controller = arr[0]
+		        	action = arr[1]
+		        	uri = key
+		        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'GET'})
+		        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'POST'})
+			        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Welcome.index"])
+			      else
+							controller = value
+				      @default_actions.each do |action|
+				      	if action == 'index'
+					      	action = '/' 
+					      end
+			        	uri = @config.server['base_uri'] + controller + '/' + action
 
-			      @default_actions.each do |action|
-		        	uri = @config.server['base_uri'] + controller + '/' + action
-		        	@routes.push({uri => {'controller' => controller_name, 'action' => action}})
+			        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'GET'})
+			        	unless action == 'index' || action == 'show'
+				        	@routes.push({'uri' => uri, 'controller' => "Apps::Controllers::#{controller.to_camel}Controller", 'action' => action, 'method' => 'POST'})
+			        	end
+				      end
 			      end
-		      end
-	        # @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "routes:#{@routes.inspect}"])
+					end
+	        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "routes:#{@routes}"])
+				rescue Exception => e
+	        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "Error:#{e.message}"])
 				end
-        @logger.log('debug', ['Libs::Core::Router', 'generate_routes', "routes:#{@routes}"])
-				# @routes
 			end
 
-			def find_route(uri)
-				@routes[uri]
+			def find_route(uri, method_type)
+        @logger.log('debug', ['Libs::Core::Router', 'find_route', "uri[#{uri}] method_type[#{method_type}]"])
+				begin
+					@routes.each do |route|
+		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "start_with? [#{(uri.start_with? route['uri']).to_s}] method_type?:#{(method_type == route['method']).to_s}"])
+		        @logger.log('debug', ['Libs::Core::Router', 'find_route', "route:#{route.inspect}"])
+						if ((uri.start_with? route['uri']) && (method_type == route['method']))
+			        @logger.log('debug', ['Libs::Core::Router', 'find_route', 'find route'])
+							return route
+						end
+					end
+				rescue Exception => e
+		       @logger.log('debug', ['Libs::Core::Router', 'find_route', e.message])
+				end
 			end
 		end
 	end

@@ -2,12 +2,14 @@ GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
   specs:
+    eventmachine (1.2.7)
     mysql2 (0.5.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  eventmachine
   mysql2
 
 RUBY VERSION

@@ -1,10 +1,10 @@
 databases:
-	default:
-	  adapter: mysql2
-    hostname: 127.0.0.1
-	  encoding: utf8
-	  database: blog_development
-	  username: <%= ENV['BAMBOO_DB_USER'] %>
-	  password: <%= ENV['BAMBOO_DB_PASSWORD'] %>
-	  pool: 20
-	  timeout: 5000
+  default:
+    adapter: mysql2
+    hostname: localhost
+    encoding: utf8
+    database: blog_development
+    username: <%= ENV['BAMBOO_DB_USER'] %>
+    password: <%= ENV['BAMBOO_DB_PASSWORD'] %>
+    pool: 20
+    timeout: 5000

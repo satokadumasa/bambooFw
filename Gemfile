@@ -3,5 +3,6 @@ source 'https://rails-assets.org'  # rails-assets.org を source として指定
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.4.0'
+gem 'eventmachine'
 gem 'mysql2'
 
