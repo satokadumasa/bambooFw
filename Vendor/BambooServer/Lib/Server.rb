@@ -12,7 +12,7 @@ class BambooServer < BaseClass
         @project_root = @config.project_root
         @pid_file = @project_root + "/tmp/pids/bamboo.pdi"
         puts "pid_file[#{@pid_file}]"
-        @logger = Libs::Utils::Logger.new(@project_root)
+        @logger = BambooFw::Lib::Utils::Logger.new(@project_root)
       end
 
       def main_proc
@@ -91,9 +91,15 @@ class BambooServer < BaseClass
 
         params = get_params(param, method_type, id) 
 
-        dispatcher = Libs::Core::Dispatcher.new(@config, uri, method_type, params)
+        dispatcher = BambooFw::Lib::Core::Dispatcher.new(@config, uri, method_type, params)
         content = dispatcher.dispatch
-
+        @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "content:#{content}"])
+        if content.include?('Location: ')
+          client.puts "HTTP/1.0 301 OK"
+          client.puts content
+          client.close
+          return
+        end
         client.puts "HTTP/1.0 200 OK"
         client.puts "Content-Type: text/html"
         client.puts

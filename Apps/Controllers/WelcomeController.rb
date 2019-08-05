@@ -1,6 +1,6 @@
 class Apps < BaseClass
 	class Controllers < BaseClass
-		class WelcomeController < Libs::Core::BaseController
+		class WelcomeController < BambooFw::Lib::Core::BaseController
 			def initialize(config, params)
 				super(config, params)
 				# @config = config
@@ -8,11 +8,10 @@ class Apps < BaseClass
 			end
 
 			def index
-				@data = {}
 				begin
 					user = Apps::Models::User.new(@config)
-					@users = user.find_all
-					@data['Users'] = @users
+					users = user.find_all
+					@view_data['Users'] = users
 				rescue Exception => e
 					@logger.log('debug',['Apps::Controllers::WelcomeController','index', "Error:#{e.message}"])
 				end

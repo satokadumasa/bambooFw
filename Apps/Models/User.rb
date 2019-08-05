@@ -1,6 +1,6 @@
 class Apps < BaseClass
 	class Models < BaseClass
-		class User < Libs::Core::BaseModel
+		class User < BambooFw::Lib::Core::BaseModel
 			def initialize(config)
 				super(config)
 				@config = config

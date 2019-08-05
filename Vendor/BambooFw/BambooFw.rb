@@ -1,0 +1,2 @@
+class BambooFw < BaseClass
+end
