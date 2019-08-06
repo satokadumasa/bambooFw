@@ -6,6 +6,7 @@ class BaseClass
 	end
 
   def self.const_missing(const)
+    # puts "const:#{const}"
   	constant = self.name + '::' + const.to_s
   	file_name = constant.gsub('::', '/') + '.rb'
   	require file_name

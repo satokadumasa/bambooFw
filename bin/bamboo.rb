@@ -1,4 +1,8 @@
 puts "Start Bamboo"
+
+require 'cgi/session'
+require 'securerandom'
+
 project_root = File.expand_path("../../", __FILE__) + '/'
 
 vendor_path = project_root + 'Vendor/'
@@ -8,6 +12,7 @@ $LOAD_PATH.unshift(vendor_path)
 $LOAD_PATH.unshift(app_path)
 
 begin
+	require 'BambooFw/Lib/Core/cgi_ession.rb'
 	require 'BambooFw/Lib/Core/BaseClass.rb'
 	require 'Apps.rb'
 	require 'BambooFw/BambooFw.rb'

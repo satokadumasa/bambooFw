@@ -1,6 +1,12 @@
 require 'socket'
 require 'fileutils'
 
+require 'kconv'
+# require 'cgi'
+# require 'cgi/session'
+require 'securerandom'
+require 'net/http'
+
 class BambooServer < BaseClass
   class Lib < BaseClass
     class Server < BaseClass
@@ -27,6 +33,36 @@ class BambooServer < BaseClass
       end
         
       def sarver(client)
+        begin
+
+          @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "Start"])
+          ARGV.replace(["session_key"=>"001"])
+          @cookie = CGI::Cookie.new({"name" => "JSESSIONID" ,"path"=>"xxxx"})
+          @cgi = CGI.new('html4')
+          @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "cgi:#{@cgi.inspect}"])
+          # @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "session_key[#{session_key.inspect}]"])
+          File.umask(0077)                                # セッションファイルは誰にも読まれたくないよ
+          @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "CH-01"])
+          @session = CGI::Session.new(@cgi)               # セッションはこうして生成する。
+          @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "CH-02"])
+          @session.delete_sessiom
+          @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "CH-03"])
+          @session['session_key'] = SecureRandom.random_bytes(10) unless @session
+          # @cmd = "#{@cgi['cmd'].first}"                   # ruby 1.8 でも動くように(warning は出ます)
+          # @cmd = 'start' if @cmd.empty?
+          # @header = { "type" => "text/html", "charset" => "uft-8" }
+          @header = { "type" => "text/html" }
+        rescue Exception => e
+          @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "Exception Error:#{e.message}" ])
+          
+        end
+        # @cmd = "#{@cgi['cmd'].first}"                   # ruby 1.8 でも動くように(warning は出ます)
+        # @cmd = 'start' if @cmd.empty?
+        # # @header = { "type" => "text/html", "charset" => "uft-8" }
+
+        # __send__("cmd_#{@cmd}")
+
+
         p [Thread.current]
         param = ''
         method_type = nil
@@ -57,9 +93,9 @@ class BambooServer < BaseClass
             method_type = 'GET' 
             uri = buffer.split[1].to_s
             str = uri.split('?')[0]
-            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "str:#{str}"])
+            # @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "str:#{str}"])
             id = str.split('/').pop
-            @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "id:#{id.inspect}"])
+            # @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "id:#{id.inspect}"])
           end
           if buffer.include? 'DELETE'
             @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "DELETE"])
@@ -93,7 +129,8 @@ class BambooServer < BaseClass
 
         dispatcher = BambooFw::Lib::Core::Dispatcher.new(@config, uri, method_type, params)
         content = dispatcher.dispatch
-        @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "content:#{content}"])
+
+        # @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "content:#{content}"])
         if content.include?('Location: ')
           client.puts "HTTP/1.1 302 Found"
           client.puts content
@@ -101,10 +138,16 @@ class BambooServer < BaseClass
           client.close
           return
         end
+        cookie = CGI::Cookie::new({"name" => "name", "value" => "value"})
+        # content = @cgi.out(@header) {content}
+        # puts "--------"
+        # puts "content:#{content}"
         client.puts "HTTP/1.0 200 OK"
         client.puts "Content-Type: text/html"
+        client.puts "Set-Cookie: #{@cookie.to_s}"
         client.puts
         client.puts content
+        # client.puts content
         client.close
       end
 
@@ -120,7 +163,7 @@ class BambooServer < BaseClass
         params = {}
         params = divide_param(param) if param
         params['id'] = id if id
-        @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "params[#{params.inspect}]"])
+        # @logger.log('debug', ['BambooServer::Lib::Server', 'get_params', "params[#{params.inspect}]"])
 
         params
       end

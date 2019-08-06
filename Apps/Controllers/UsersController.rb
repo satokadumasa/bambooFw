@@ -5,14 +5,14 @@ class Apps < BaseClass
 		class UsersController < BambooFw::Lib::Core::BaseController
 			def initialize(config, params)
 				super(config, params)
-				@logger.log('debug',['Apps::Controllers::UsersController','initialize', "params:#{params.inspect}"])
+				# @logger.log('debug',['Apps::Controllers::UsersController','initialize', "params:#{params.inspect}"])
 			end
 
 			def index
 				begin
 					user = Apps::Models::User.new(@config)
 					users = user.find_all
-					@logger.log('debug',['Apps::Controllers::UsersController','index', "users:#{users.inspect}"])
+					# @logger.log('debug',['Apps::Controllers::UsersController','index', "users:#{users.inspect}"])
 					@view_data['Users'] = users
 				rescue Exception => e
 					@logger.log('debug',['Apps::Controllers::UsersController','index', "Error:#{e.message}"])
@@ -22,7 +22,7 @@ class Apps < BaseClass
 				id = 0
 				begin
 					user = Apps::Models::User.new(@config)
-					@logger.log('debug',['Apps::Controllers::UsersController','show', "params:#{@params.inspect}"])
+					# @logger.log('debug',['Apps::Controllers::UsersController','show', "params:#{@params.inspect}"])
 
 					@logger.log('debug',['Apps::Controllers::UsersController','show', "id:#{@params['id']}"])
 					# @logger.log('debug',['Apps::Controllers::UsersController','show', "id:#{@params[:id].inspect}"])
@@ -30,7 +30,7 @@ class Apps < BaseClass
 					# @users = user.find(1)
 					# user = {'id' => 1, 'name' => 'name1'}
 					# @users.push(user)
-					@logger.log('debug',['Apps::Controllers::UsersController','show', "user:#{@user.inspect}"])
+					# @logger.log('debug',['Apps::Controllers::UsersController','show', "user:#{@user.inspect}"])
 					@view_data['User'] = user
 				rescue Exception => e
 					@logger.log('debug',['Apps::Controllers::UsersController','show', "Error:#{e.message}"])

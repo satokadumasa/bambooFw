@@ -60,12 +60,8 @@ class BambooFw < BaseClass
 					uri = uri.to_snake
 					begin
 						@routes.each do |route|
-			        @logger.log('debug', ['BambooFw::Lib::Core::Router', 'find_route', "route.uri[#{route['uri']}]"])
-			        @logger.log('debug', ['BambooFw::Lib::Core::Router', 'find_route', "uri[#{uri}]"])
-			        @logger.log('debug', ['BambooFw::Lib::Core::Router', 'find_route', "start_with[#{(uri.start_with? route['uri'])}]"])
-			        @logger.log('debug', ['BambooFw::Lib::Core::Router', 'find_route', "route.uri[#{route['uri']}] route.method[#{route['method']}]"])
 							if ((uri.start_with? route['uri']) && (method_type == route['method']))
-				        @logger.log('debug', ['BambooFw::Lib::Core::Router', 'find_route', "route[#{route.inspect}]"])
+				        # @logger.log('debug', ['BambooFw::Lib::Core::Router', 'find_route', "route[#{route.inspect}]"])
 								return route
 							end
 						end
