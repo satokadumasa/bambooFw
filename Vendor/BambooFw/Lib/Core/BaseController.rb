@@ -12,12 +12,6 @@ class BambooFw < BaseClass
 					@view_data = {}
 				end
 			end
-
-		  def redirect_to(uri)
-        @logger.log('debug', ['BambooFw::Lib::Core::BaseController', 'redirect_to', "START"])
-		  	Net::HTTP.get_print @config.base_url, uri
-				exit
-		  end
 		end
 	end
 end

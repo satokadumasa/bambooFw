@@ -95,8 +95,9 @@ class BambooServer < BaseClass
         content = dispatcher.dispatch
         @logger.log('debug', ['BambooServer::Lib::Server', 'sarver', "content:#{content}"])
         if content.include?('Location: ')
-          client.puts "HTTP/1.0 301 OK"
+          client.puts "HTTP/1.1 302 Found"
           client.puts content
+          client.puts
           client.close
           return
         end

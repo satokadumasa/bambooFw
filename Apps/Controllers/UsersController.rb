@@ -42,6 +42,7 @@ class Apps < BaseClass
 					user = Apps::Models::User.new(@config)
 					if @params['method_type'] == 'POST'
 						if user.save(@params)
+							@logger.log('debug',['Apps::Controllers::UsersController','new', "Success Save"])
 							redirect_to('/users/')
 							# exit
 						end
@@ -52,15 +53,14 @@ class Apps < BaseClass
 					# exit
 				end
 			end
-
-			def redirect_to(uri)
-				begin
-					@view_data = "Location: #{@config.base_url}#{uri}"
-
-				rescue Exception => e
-					@logger.log('debug',['Apps::Controllers::UsersController','redirect_to', "Error:#{e.message}"])
+			private
+				def redirect_to(uri)
+					begin
+						@view_data = "Location: #{@config.base_url}#{uri}"
+					rescue Exception => e
+						@logger.log('debug',['Apps::Controllers::UsersController','redirect_to', "Error:#{e.message}"])
+					end
 				end
-			end
 		end
 	end
 end
